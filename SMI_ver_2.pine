@@ -7,8 +7,20 @@ study("Stochastic Momentum Index", shorttitle="SMI", resolution="")
 //------------------------------------------------------------------------------
 // Constants
 //------------------------------------------------------------------------------
-float LEVEL_STRONG = 15
-float -LEVEL_WEAK = -15
+//------------------------------------------------------------------------------
+// Constants
+//------------------------------------------------------------------------------
+float LEVEL_STRONG_1 = 5
+float LEVEL_STRONG_2 = 10
+float LEVEL_STRONG_3 = 15
+float LEVEL_STRONG_4 = 20
+float LEVEL_STRONG_5 = 25
+
+float LEVEL_WEAK_1 = -5
+float LEVEL_WEAK_2 = -10
+float LEVEL_WEAK_3 = -15
+float LEVEL_WEAK_4 = -20
+float LEVEL_WEAK_5 = -25
 
 //------------------------------------------------------------------------------
 // Inputs
@@ -49,33 +61,47 @@ smi = 100 * numerator / denominator
 signal = ema(smi, signal_Length)
 
 histogram = smi - signal
-histColor = histogram >= 0 ? (histogram[1] < histogram ? histogram_color_bull_high : histogram_color_bull_low) : (histogram[1] < histogram ? histogram_color_bear_high : histogram_color_bear_low)
-plot(showHistogram ? histogram : na, title="Histogram", style=plot.style_histogram, color=histColor)
 
-trendColor = smi > signal ? color.green : color.red
+f_color_histogram() =>
+    color _color = na
+    
+    if histogram >= LEVEL_STRONG_1
+        _color = color.yellow
+    else if histogram[1] < histogram
+        _color = histogram_color_bull_high
+    else
+        _color = histogram_color_bull_low
+
+histColor = histogram >= 0 ? f_color_histogram() : (histogram[1] < histogram ? histogram_color_bear_high : histogram_color_bear_low)
+plot(showHistogram ? histogram : na, title="Histogram", style=plot.style_columns, color=histColor)
+
+trendColor = smi > signal ? color.blue : color.red
 smiColor = applyFilling ? trendColor : #ff3e7d
 signalColor = applyFilling ? trendColor : #3c78d8
 
-smiPlot = plot(smi, title="SMI", color=color.new(smiColor, 0))
-signalPlot = plot(signal, title="Signal", color=color.new(signalColor, 0))
+smiPlot = plot(smi, title="SMI", color=smiColor)
+signalPlot = plot(signal, title="Signal", color=signalColor)
 
-transparent = color.new(color.white, 0)
+transparent = color.new(color.white, 100)
 
 maxLevelPlot = hline(maxLevel, title="Max Level", linestyle=hline.style_dashed, color=transparent)
-obLevelPlot = hline(obLevel, title="Overbought Level", linestyle=hline.style_dashed, color=#00796b)
-hline(0, title="Zero Level", linestyle=hline.style_dashed, color=#989898)
-osLevelPlot = hline(osLevel, title="Oversold Level", linestyle=hline.style_dashed, color=#f57f17)
+obLevelPlot = hline(obLevel, title="Overbought Level", linestyle=hline.style_dashed, color=color.green)
+fill(maxLevelPlot, obLevelPlot, color=color.new(color.green, 85))
+
+hline(0, title="Zero Level", linestyle=hline.style_dashed, color=color.gray)
+
+osLevelPlot = hline(osLevel, title="Oversold Level", linestyle=hline.style_dashed, color=color.red)
 minLevelPlot = hline(minLevel, title="Min Level", linestyle=hline.style_dashed, color=transparent)
-fill(obLevelPlot, osLevelPlot, color=color.new(color.purple, 95))
+fill(osLevelPlot, minLevelPlot, color=color.new(color.red, 85))
 
-obFillColor = smi > obLevel and highlightBreakouts ? color.green : transparent
-osFillColor = smi < osLevel and highlightBreakouts ? color.red : transparent
+// obFillColor = smi > obLevel and highlightBreakouts ? color.green : transparent
+// osFillColor = smi < osLevel and highlightBreakouts ? color.red : transparent
 
-fill(maxLevelPlot, obLevelPlot, color=color.new(obFillColor, 85))
-fill(minLevelPlot, osLevelPlot, color=color.new(osFillColor, 85))
+// fill(maxLevelPlot, obLevelPlot, color=color.new(obFillColor, 85))
+// fill(minLevelPlot, osLevelPlot, color=color.new(osFillColor, 85))
 
-fillColor = applyFilling ? trendColor : transparent
-fill(smiPlot, signalPlot, color=color.new(fillColor, 70))
+fillColor = applyFilling ? color.new(trendColor, 70) : transparent
+fill(smiPlot, signalPlot, color=fillColor)
 
 zeroCrossBgColor = highlightZeroCrossovers ? (smi > 0 ? color.green : color.red) : transparent
 bgcolor(color.new(zeroCrossBgColor, 90))
