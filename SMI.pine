@@ -1,0 +1,66 @@
+////////////////////////////////////////////////////////////
+// @version=4
+// @author=andre_007
+// v1.0 16/06/2021
+// The SMI Ergodic Indicator is the same as the True Strength Index (TSI) developed by 
+// William Blau, except the SMI includes a signal line. The SMI uses double moving averages 
+// of price minus previous price over 2 time frames. The signal line, which is an EMA of the 
+// SMI, is plotted to help trigger trading signals. Adjustable guides are also given to fine 
+// tune these signals. The user may change the input (close), method (EMA), period lengths 
+// and guide values.
+// You can use in the xPrice any series: Open, High, Low, Close, HL2, HLC3, OHLC4 and ect...
+////////////////////////////////////////////////////////////
+
+// study(title="SMI Ergodic Oscillator")
+// fastPeriod = input(4, minval=1)
+// slowPeriod = input(8, minval=1)
+// SmthLen = input(3, minval=1)
+
+
+// xPrice = close
+// xPrice1 = xPrice - xPrice[1]
+// xPrice2 = abs(xPrice - xPrice[1])
+// xSMA_R = ema(ema(xPrice1,fastPeriod),slowPeriod)
+// xSMA_aR = ema(ema(xPrice2, fastPeriod),slowPeriod)
+// xSMI = xSMA_R / xSMA_aR
+// xEMA_SMI = ema(xSMI, SmthLen)
+// plot(xSMI, color=green, title="Ergotic SMI")
+// plot(xEMA_SMI, color=red, title="SigLin")
+
+// study(title="SMI Ergodic Oscillator", shorttitle="SMIO", format=format.price, precision=4, resolution="")
+// longlen = input(20, minval=1, title="Long Length")
+// shortlen = input(5, minval=1, title="Short Length")
+// siglen = input(5, minval=1, title="Signal Line Length")
+// erg = tsi(close, shortlen, longlen)
+// sig = ema(erg, siglen)
+// osc = erg - sig
+// plot(osc, color=#FF8080, style=plot.style_histogram, title="SMI Ergodic Oscillator")
+
+
+study(title="SMI Ergodic Indicator", shorttitle="SMII", format=format.price, precision=4, resolution="")
+
+//---------------------------------------------------------
+// Inputs
+//---------------------------------------------------------
+longlen = input(20, minval=1, title="Long Length")
+shortlen = input(5, minval=1, title="Short Length")
+siglen = input(5, minval=1, title="Signal Line Length")
+
+TopBand = input(0.5, step=0.1)
+LowBand = input(-0.5, step=0.1)
+
+erg = tsi(close, shortlen, longlen)
+sig = ema(erg, siglen)
+
+//---------------------------------------------------------
+// Plots
+//---------------------------------------------------------
+plot(erg, color=#0094FF, title="SMI")
+plot(sig, color=#FF6A00, title="Signal")
+
+//---------------------------------------------------------
+// Lines
+//---------------------------------------------------------
+hline(0, color=color.gray, linestyle=hline.style_dashed)
+hline(TopBand, color=color.red, linestyle=hline.style_dashed)
+hline(LowBand, color=color.green, linestyle=hline.style_dashed)
