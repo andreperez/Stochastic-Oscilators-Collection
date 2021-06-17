@@ -5,36 +5,52 @@
 study("Stochastic Momentum Index", shorttitle="SMI", resolution="")
 
 //------------------------------------------------------------------------------
+// Constants
+//------------------------------------------------------------------------------
+float LEVEL_STRONG = 15
+float -LEVEL_WEAK = -15
+
+//------------------------------------------------------------------------------
 // Inputs
 //------------------------------------------------------------------------------
-q = input(title="Stochastic Lookback", type=input.integer, defval=20, minval=1)
-r = input(title="1st Smoothing Length", type=input.integer, defval=5, minval=1)
-s = input(title="2nd Smoothing Length", type=input.integer, defval=5, minval=1)
-signalLength = input(title="Signal Length", type=input.integer, defval=5, minval=1)
+length = input(title="Stochastic Lookback", type=input.integer, defval=20, minval=1)
+smoth_len_1 = input(title="1st Smoothing Length", type=input.integer, defval=5, minval=1)
+smoth_len_2 = input(title="2nd Smoothing Length", type=input.integer, defval=5, minval=1)
+signal_Length = input(title="Signal Length", type=input.integer, defval=5, minval=1)
+
 obLevel = input(title="Overbought Level", type=input.integer, defval=40)
 osLevel = input(title="Oversold Level", type=input.integer, defval=-40)
-maxLevel = input(title="Max Level", type=input.integer, defval=75)
-minLevel = input(title="Min Level", type=input.integer, defval=-75)
+maxLevel = input(title="Max Level", type=input.integer, defval=100)
+minLevel = input(title="Min Level", type=input.integer, defval=-100)
 src = input(title="Source", type=input.source, defval=close)
 
-showHistogram = input(title="Show Histogram ?", type=input.bool, defval=false)
+showHistogram = input(title="Show Histogram ?", type=input.bool, defval=true)
 highlightBreakouts = input(title="Highlight Overbought/Oversold Breakouts ?", type=input.bool, defval=true)
 highlightCrossovers = input(title="Highlight SMI/Signal Crossovers ?", type=input.bool, defval=false)
 highlightZeroCrossovers = input(title="Highlight Zero Line Crossovers ?", type=input.bool, defval=false)
-applyFilling = input(title="Apply Ribbon Filling ?", type=input.bool, defval=false)
+applyFilling = input(title="Apply Ribbon Filling ?", type=input.bool, defval=true)
 
-hh = highest(q)
-ll = lowest(q)
+//------------------------------------------------------------------------------
+// Colors
+//------------------------------------------------------------------------------
+histogram_color_bull_high = #26A69A
+histogram_color_bull_low = #B2DFDB
+histogram_color_bear_high = #FFCDD2
+histogram_color_bear_low = #EF5350
 
-numerator = ema(ema(src - 0.5 * (hh + ll), r), s)
-denominator = 0.5 * ema(ema(hh - ll, r), s)
+
+_highest = highest(length)
+_lowest = lowest(length)
+
+numerator = ema(ema(src - 0.5 * (_highest + _lowest), smoth_len_1), smoth_len_2)
+denominator = 0.5 * ema(ema(_highest - _lowest, smoth_len_1), smoth_len_2)
 
 smi = 100 * numerator / denominator
-signal = ema(smi, signalLength)
+signal = ema(smi, signal_Length)
 
-hist = smi - signal
-histColor = hist >= 0 ? (hist[1] < hist ? #26A69A : #B2DFDB) : (hist[1] < hist ? #FFCDD2 : #EF5350)
-plot(showHistogram ? hist : na, title="Histogram", style=plot.style_histogram, color=color.new(histColor, 0))
+histogram = smi - signal
+histColor = histogram >= 0 ? (histogram[1] < histogram ? histogram_color_bull_high : histogram_color_bull_low) : (histogram[1] < histogram ? histogram_color_bear_high : histogram_color_bear_low)
+plot(showHistogram ? histogram : na, title="Histogram", style=plot.style_histogram, color=histColor)
 
 trendColor = smi > signal ? color.green : color.red
 smiColor = applyFilling ? trendColor : #ff3e7d
@@ -43,7 +59,7 @@ signalColor = applyFilling ? trendColor : #3c78d8
 smiPlot = plot(smi, title="SMI", color=color.new(smiColor, 0))
 signalPlot = plot(signal, title="Signal", color=color.new(signalColor, 0))
 
-transparent = color.new(color.white, 100)
+transparent = color.new(color.white, 0)
 
 maxLevelPlot = hline(maxLevel, title="Max Level", linestyle=hline.style_dashed, color=transparent)
 obLevelPlot = hline(obLevel, title="Overbought Level", linestyle=hline.style_dashed, color=#00796b)
