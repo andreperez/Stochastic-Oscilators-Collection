@@ -21,24 +21,24 @@ float LEVEL_WEAK_4 = -20
 float LEVEL_WEAK_5 = -25
 
 // Colors
-color C_LEVEL_STRONG_5 = #1e7b1e
-color C_LEVEL_STRONG_4 = #28a428
-color C_LEVEL_STRONG_3 = #2db92d
-color C_LEVEL_STRONG_2 = #46d246
-color C_LEVEL_STRONG_1 = #6fdc6f
+color C_LEVEL_STRONG_5 = #151dfb
+color C_LEVEL_STRONG_4 = #0052bf
+color C_LEVEL_STRONG_3 = #0076d5
+color C_LEVEL_STRONG_2 = #119ae6
+color C_LEVEL_STRONG_1 = #5dbdf4
 
-color C_LEVEL_WEAK_5 = #b30047
-color C_LEVEL_WEAK_4 = #e6005c
-color C_LEVEL_WEAK_3 = #ff3385
-color C_LEVEL_WEAK_2 = #ff66a3
-color C_LEVEL_WEAK_1 = #ffb3d1
+color C_LEVEL_WEAK_5 = #a60d0c
+color C_LEVEL_WEAK_4 = #e91210
+color C_LEVEL_WEAK_3 = #f13937
+color C_LEVEL_WEAK_2 = #f46564
+color C_LEVEL_WEAK_1 = #f79190
 
 //------------------------------------------------------------------------------
 // Functions
 //------------------------------------------------------------------------------
 f_color_histogram_bull(value) =>
-    color _color = na
-    
+    color _color = na    
+
     if value >= LEVEL_STRONG_5
         _color := C_LEVEL_STRONG_5
     else if value >= LEVEL_STRONG_4
@@ -47,8 +47,11 @@ f_color_histogram_bull(value) =>
         _color := C_LEVEL_STRONG_3 
     else if value >= LEVEL_STRONG_2
         _color := C_LEVEL_STRONG_2
-    else
-        _color := C_LEVEL_STRONG_1
+    else        
+        if value > value[1]
+            _color := C_LEVEL_STRONG_2
+        else
+            _color := C_LEVEL_STRONG_1
 
 f_color_histogram_bear(value) =>    
     color _color = na
