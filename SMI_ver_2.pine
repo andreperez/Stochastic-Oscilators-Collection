@@ -119,7 +119,7 @@ histColor = f_color_histogram(histogram)
 // histColor = histogram >= 0 ? f_color_histogram_bull(histogram) : na
 plot(showHistogram ? histogram : na, title="Histogram", style=plot.style_columns, color=histColor)
 
-trendColor = smi > signal ? color.blue : color.red
+trendColor = smi > signal ? color.green : color.purple
 smiColor = applyFilling ? trendColor : #ff3e7d
 signalColor = applyFilling ? trendColor : #3c78d8
 
@@ -136,10 +136,10 @@ hline(0, title="Zero Level", linestyle=hline.style_dotted, color=color.new(color
 
 osLevelPlot = hline(osLevel, title="Oversold Level", linestyle=hline.style_dashed, color=transparent)
 minLevelPlot = hline(minLevel, title="Min Level", linestyle=hline.style_dashed, color=transparent)
-fill(osLevelPlot, minLevelPlot, color=color.new(color.red, 85))
+fill(osLevelPlot, minLevelPlot, color=color.new(color.purple, 85))
 
 fillColor = applyFilling ? color.new(trendColor, 70) : transparent
 fill(smiPlot, signalPlot, color=fillColor)
 
 plotshape(highlightCrossovers and crossover(smi, signal) ? smi : na, title="Crossover", location=location.absolute, style=shape.circle, size=size.tiny, color=color.new(color.green, 0))
-plotshape(highlightCrossovers and crossunder(smi, signal) ? smi : na, title="Crossunder", location=location.absolute, style=shape.circle, size=size.tiny, color=color.new(color.red, 0))
+plotshape(highlightCrossovers and crossunder(smi, signal) ? smi : na, title="Crossunder", location=location.absolute, style=shape.circle, size=size.tiny, color=color.new(color.purple, 0))
