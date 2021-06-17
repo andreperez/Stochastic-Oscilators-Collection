@@ -1,0 +1,68 @@
+// @version=4
+// @author=André Eduardo Pérez Álvarez (andre_007)
+// Thanks to original author: Alex Orekhov (everget)
+// Stochastic Momentum Index script may be freely distributed under the MIT license.
+study("Stochastic Momentum Index", shorttitle="SMI", resolution="")
+
+//------------------------------------------------------------------------------
+// Inputs
+//------------------------------------------------------------------------------
+q = input(title="Stochastic Lookback", type=input.integer, defval=20, minval=1)
+r = input(title="1st Smoothing Length", type=input.integer, defval=5, minval=1)
+s = input(title="2nd Smoothing Length", type=input.integer, defval=5, minval=1)
+signalLength = input(title="Signal Length", type=input.integer, defval=5, minval=1)
+obLevel = input(title="Overbought Level", type=input.integer, defval=40)
+osLevel = input(title="Oversold Level", type=input.integer, defval=-40)
+maxLevel = input(title="Max Level", type=input.integer, defval=75)
+minLevel = input(title="Min Level", type=input.integer, defval=-75)
+src = input(title="Source", type=input.source, defval=close)
+
+showHistogram = input(title="Show Histogram ?", type=input.bool, defval=false)
+highlightBreakouts = input(title="Highlight Overbought/Oversold Breakouts ?", type=input.bool, defval=true)
+highlightCrossovers = input(title="Highlight SMI/Signal Crossovers ?", type=input.bool, defval=false)
+highlightZeroCrossovers = input(title="Highlight Zero Line Crossovers ?", type=input.bool, defval=false)
+applyFilling = input(title="Apply Ribbon Filling ?", type=input.bool, defval=false)
+
+hh = highest(q)
+ll = lowest(q)
+
+numerator = ema(ema(src - 0.5 * (hh + ll), r), s)
+denominator = 0.5 * ema(ema(hh - ll, r), s)
+
+smi = 100 * numerator / denominator
+signal = ema(smi, signalLength)
+
+hist = smi - signal
+histColor = hist >= 0 ? (hist[1] < hist ? #26A69A : #B2DFDB) : (hist[1] < hist ? #FFCDD2 : #EF5350)
+plot(showHistogram ? hist : na, title="Histogram", style=plot.style_histogram, color=color.new(histColor, 0))
+
+trendColor = smi > signal ? color.green : color.red
+smiColor = applyFilling ? trendColor : #ff3e7d
+signalColor = applyFilling ? trendColor : #3c78d8
+
+smiPlot = plot(smi, title="SMI", color=color.new(smiColor, 0))
+signalPlot = plot(signal, title="Signal", color=color.new(signalColor, 0))
+
+transparent = color.new(color.white, 100)
+
+maxLevelPlot = hline(maxLevel, title="Max Level", linestyle=hline.style_dashed, color=transparent)
+obLevelPlot = hline(obLevel, title="Overbought Level", linestyle=hline.style_dashed, color=#00796b)
+hline(0, title="Zero Level", linestyle=hline.style_dashed, color=#989898)
+osLevelPlot = hline(osLevel, title="Oversold Level", linestyle=hline.style_dashed, color=#f57f17)
+minLevelPlot = hline(minLevel, title="Min Level", linestyle=hline.style_dashed, color=transparent)
+fill(obLevelPlot, osLevelPlot, color=color.new(color.purple, 95))
+
+obFillColor = smi > obLevel and highlightBreakouts ? color.green : transparent
+osFillColor = smi < osLevel and highlightBreakouts ? color.red : transparent
+
+fill(maxLevelPlot, obLevelPlot, color=color.new(obFillColor, 85))
+fill(minLevelPlot, osLevelPlot, color=color.new(osFillColor, 85))
+
+fillColor = applyFilling ? trendColor : transparent
+fill(smiPlot, signalPlot, color=color.new(fillColor, 70))
+
+zeroCrossBgColor = highlightZeroCrossovers ? (smi > 0 ? color.green : color.red) : transparent
+bgcolor(color.new(zeroCrossBgColor, 90))
+
+plotshape(highlightCrossovers and crossover(smi, signal) ? smi : na, title="Crossover", location=location.absolute, style=shape.circle, size=size.tiny, color=color.new(color.green, 0))
+plotshape(highlightCrossovers and crossunder(smi, signal) ? smi : na, title="Crossunder", location=location.absolute, style=shape.circle, size=size.tiny, color=color.new(color.red, 0))
