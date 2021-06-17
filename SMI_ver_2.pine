@@ -7,9 +7,7 @@ study("Stochastic Momentum Index", shorttitle="SMI", resolution="")
 //------------------------------------------------------------------------------
 // Constants
 //------------------------------------------------------------------------------
-//------------------------------------------------------------------------------
-// Constants
-//------------------------------------------------------------------------------
+// Levels
 float LEVEL_STRONG_1 = 5
 float LEVEL_STRONG_2 = 10
 float LEVEL_STRONG_3 = 15
@@ -21,6 +19,50 @@ float LEVEL_WEAK_2 = -10
 float LEVEL_WEAK_3 = -15
 float LEVEL_WEAK_4 = -20
 float LEVEL_WEAK_5 = -25
+
+// Colors
+color C_LEVEL_STRONG_5 = #1e7b1e
+color C_LEVEL_STRONG_4 = #28a428
+color C_LEVEL_STRONG_3 = #2db92d
+color C_LEVEL_STRONG_2 = #46d246
+color C_LEVEL_STRONG_1 = #6fdc6f
+
+color C_LEVEL_WEAK_5 = #b30047
+color C_LEVEL_WEAK_4 = #e6005c
+color C_LEVEL_WEAK_3 = #ff3385
+color C_LEVEL_WEAK_2 = #ff66a3
+color C_LEVEL_WEAK_1 = #ffb3d1
+
+//------------------------------------------------------------------------------
+// Functions
+//------------------------------------------------------------------------------
+f_color_histogram_bull(value) =>
+    color _color = na
+    
+    if value >= LEVEL_STRONG_5
+        _color := C_LEVEL_STRONG_5
+    else if value >= LEVEL_STRONG_4
+        _color := C_LEVEL_STRONG_4
+    else if value >= LEVEL_STRONG_3
+        _color := C_LEVEL_STRONG_3 
+    else if value >= LEVEL_STRONG_2
+        _color := C_LEVEL_STRONG_2
+    else
+        _color := C_LEVEL_STRONG_1
+
+f_color_histogram_bear(value) =>    
+    color _color = na
+    
+    if value <= LEVEL_WEAK_5
+        _color := C_LEVEL_WEAK_5
+    else if value <= LEVEL_WEAK_4
+        _color := C_LEVEL_WEAK_4
+    else if value <= LEVEL_WEAK_3
+        _color := C_LEVEL_WEAK_3
+    else if value <= LEVEL_WEAK_2
+        _color := C_LEVEL_WEAK_2
+    else
+        _color := C_LEVEL_WEAK_1
 
 //------------------------------------------------------------------------------
 // Inputs
@@ -43,14 +85,8 @@ highlightZeroCrossovers = input(title="Highlight Zero Line Crossovers ?", type=i
 applyFilling = input(title="Apply Ribbon Filling ?", type=input.bool, defval=true)
 
 //------------------------------------------------------------------------------
-// Colors
+// Calcs
 //------------------------------------------------------------------------------
-histogram_color_bull_high = #26A69A
-histogram_color_bull_low = #B2DFDB
-histogram_color_bear_high = #FFCDD2
-histogram_color_bear_low = #EF5350
-
-
 _highest = highest(length)
 _lowest = lowest(length)
 
@@ -59,20 +95,10 @@ denominator = 0.5 * ema(ema(_highest - _lowest, smoth_len_1), smoth_len_2)
 
 smi = 100 * numerator / denominator
 signal = ema(smi, signal_Length)
-
 histogram = smi - signal
 
-f_color_histogram() =>
-    color _color = na
-    
-    if histogram >= LEVEL_STRONG_1
-        _color = color.yellow
-    else if histogram[1] < histogram
-        _color = histogram_color_bull_high
-    else
-        _color = histogram_color_bull_low
-
-histColor = histogram >= 0 ? f_color_histogram() : (histogram[1] < histogram ? histogram_color_bear_high : histogram_color_bear_low)
+histColor = histogram >= 0 ? f_color_histogram_bull(histogram) : f_color_histogram_bear(histogram)
+// histColor = histogram >= 0 ? f_color_histogram_bull(histogram) : na
 plot(showHistogram ? histogram : na, title="Histogram", style=plot.style_columns, color=histColor)
 
 trendColor = smi > signal ? color.blue : color.red
