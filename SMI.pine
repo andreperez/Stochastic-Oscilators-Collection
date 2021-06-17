@@ -33,11 +33,16 @@
 // siglen = input(5, minval=1, title="Signal Line Length")
 // erg = tsi(close, shortlen, longlen)
 // sig = ema(erg, siglen)
-// osc = erg - sig
-// plot(osc, color=#FF8080, style=plot.style_histogram, title="SMI Ergodic Oscillator")
 
+study(title="SMI Ergodic Indicator & Oscillator", shorttitle="SMII", format=format.price, precision=4, resolution="")
 
-study(title="SMI Ergodic Indicator", shorttitle="SMII", format=format.price, precision=4, resolution="")
+//---------------------------------------------------------
+// Histogram
+//---------------------------------------------------------
+col_grow_above = #26A69A
+col_grow_below = #FFCDD2
+col_fall_above = #B2DFDB
+col_fall_below = #EF5350
 
 //---------------------------------------------------------
 // Inputs
@@ -46,17 +51,32 @@ longlen = input(20, minval=1, title="Long Length")
 shortlen = input(5, minval=1, title="Short Length")
 siglen = input(5, minval=1, title="Signal Line Length")
 
+otherTimeFrame = input(title="Highter time frame", type=input.resolution, defval="D")
+
 TopBand = input(0.5, step=0.1)
 LowBand = input(-0.5, step=0.1)
 
+//---------------------------------------------------------
+// Calcs
+//---------------------------------------------------------
 erg = tsi(close, shortlen, longlen)
 sig = ema(erg, siglen)
+osc = erg - sig
+
+erg_high = security(syminfo.tickerid, otherTimeFrame, erg)
+sig_high = security(syminfo.tickerid, otherTimeFrame, sig)
 
 //---------------------------------------------------------
 // Plots
 //---------------------------------------------------------
 plot(erg, color=#0094FF, title="SMI")
 plot(sig, color=#FF6A00, title="Signal")
+plot(osc, color=(osc>=0 ? (osc[1] < osc ? col_grow_above : col_fall_above) : (osc[1] < osc ? col_grow_below : col_fall_below) ), transp=0, style=plot.style_columns, title="SMI Ergodic Oscillator")
+
+plot_1 = plot(erg_high, color=#0094FF, title="SMI")
+plot_2 = plot(sig_high, color=#FF6A00, title="Signal")
+
+fill(plot_1, plot2, color=(color.new(erg > sig ? color.blue : color.red, 50)))
 
 //---------------------------------------------------------
 // Lines
