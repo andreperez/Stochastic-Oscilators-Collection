@@ -1,0 +1,31 @@
+//@version=4
+study("Stochastic Momentum Index", "SMI", shorttitle="Premier Stochastic Oscillator", format=format.price, precision=2, resolution="")
+
+q = input(10, title="%K Length", type=input.integer)
+r = input(3, title="%K Smoothing Length", type=input.integer)
+s = input(3, title="%K Double Smoothing Length", type=input.integer)
+nsig = input(3, title="Signal Length", type=input.integer)
+matype = input("sma", title="Signal MA Type", type=input.string)  // possible: ema, sma, wma, trima, hma, dema, tema, zlema
+overbought = input(40, title="Overbought Level", type=input.float)
+oversold = input(-40, title="Oversold Level", type=input.float)
+
+trima(src, length) => sma(sma(src,length),length)
+hma(src, length) => wma(2*wma(src, length/2)-wma(src, length), round(sqrt(length)))
+dema(src, length) => 2*ema(src,length) - ema(ema(src,length),length)
+tema(src, length) => (3*ema(src,length) - 3*ema(ema(src,length),length)) + ema(ema(ema(src,length),length),length)
+zlema(src, length) => ema(src,length) + (ema(src,length) - ema(ema(src,length),length))
+
+smi = 100 * ema(ema(close-0.5*(highest(q)+lowest(q)),r),s) / (0.5 * ema(ema(highest(q)-lowest(q),r),s))
+sig = matype=="ema" ? ema(smi,nsig) : matype=="sma" ? sma(smi,nsig) : matype=="wma" ? wma(smi,nsig) : matype=="trima" ? trima(smi,nsig) : matype=="hma" ? hma(smi,nsig) : matype=="dema" ? dema(smi,nsig) : matype=="tema" ? tema(smi,nsig) : matype=="zlema" ? zlema(smi,nsig) : ema(smi,nsig)
+
+p_smi = plot(smi, title="SMI", color=color.new(#FF8000, 0))
+p_sig = plot(sig, title="Signal", color=color.new(#804000, 0))
+p_bot = hline(oversold, title="Oversold", color=#00FF00, linestyle=hline.style_dashed)
+p_top = hline(overbought, title="Overbought", color=#FF0000, linestyle=hline.style_dashed)
+fill(p_bot, p_top, title="Middle Region", color=color.new(color.white,85))
+fill(p_sig, p_smi, title="SMI/Signal Region", color=color.new(smi>sig ? color.green : color.maroon, 50))
+
+plot_oversold = plot(oversold, color=color.new(color.lime, 100))
+
+fill(plot_oversold, p_smi, title="Oversold Region", color=smi<oversold?#00FF0040:#FFFFFF00)
+fill(plot(overbought, color=color.new(color.red, 100), editable=false), p_smi, title="Overbought Region", color=smi>overbought?#FF000040:#FFFFFF00)

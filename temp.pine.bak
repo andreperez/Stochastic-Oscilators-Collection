@@ -35,14 +35,7 @@ color C_LEVEL_WEAK_1 = #C576F6
 
 color C_TRANSPARENT = color.new(color.white, 100)
 
-color C_OVERSOLD_AREA = color.new(#228B22, 70)
-color C_OVERBOUGHT_AREA = color.new(#A020F0, 70)
-
-color C_OVERSOLD_SIGNAL = color.new(color.lime, 70)
-color C_OVERBOUGHT_SIGNAL = color.new(color.fuchsia, 70)
-
-color C_TREND_BULL = color.green
-color C_TREND_BEAR = color.purple
+color C_OVERSOLD_AREA = color.new(#D43790, 50)
 
 //------------------------------------------------------------------------------
 // Functions
@@ -126,53 +119,36 @@ smi = 100 * numerator / denominator
 signal = ema(smi, signal_Length)
 histogram = smi - signal
 
-//------------------------------------------------------------------------------
-// Dynamic Colors
-//------------------------------------------------------------------------------
 histColor = f_color_histogram(histogram)
-trendColor = smi > signal ? C_TREND_BULL : C_TREND_BEAR
+// histColor = histogram >= 0 ? f_color_histogram_bull(histogram) : na
+plot(showHistogram ? histogram : na, title="Histogram", style=plot.style_columns, color=histColor)
+
+trendColor = smi > signal ? color.green : color.purple
 smiColor = applyFilling ? trendColor : #ff3e7d
 signalColor = applyFilling ? trendColor : #3c78d8
 
-//------------------------------------------------------------------------------
-// Levels
-//------------------------------------------------------------------------------
-// -- Max\Overbought
-obLevelLine = hline(obLevel, title="Overbought Level", linestyle=hline.style_dashed, color=C_TRANSPARENT)
-obLevelPlot = plot(obLevel, title="Overbought Level", style=plot.style_line, color=C_TRANSPARENT)
-maxLevelLine = hline(maxLevel, title="Max Level", linestyle=hline.style_dashed, color=C_TRANSPARENT)
-maxLevelPlot = plot(maxLevel, title="Max Level", style=plot.style_line, color=C_TRANSPARENT)
-
-hline(0, title="Zero Level", linestyle=hline.style_dotted, color=color.new(color.gray, 50))
-
-// -- Min\Oversold
-osLevelLine = hline(osLevel, title="Oversold Level", linestyle=hline.style_dashed, color=C_TRANSPARENT)
-osLevelPlot = plot(osLevel, title="Oversold Level", style=plot.style_line, color=C_TRANSPARENT)
-minLevelLine = hline(minLevel, title="Min Level", linestyle=hline.style_dashed, color=C_TRANSPARENT)
-minLevelPlot = plot(minLevel, title="Min Level", style=plot.style_line, color=C_TRANSPARENT)
-
-// -- Fills
-fill(obLevelPlot, maxLevelPlot, color=C_TRANSPARENT)
-fill(obLevelLine, maxLevelLine, color=C_OVERBOUGHT_AREA)
-fill(osLevelPlot, minLevelPlot, color=C_TRANSPARENT)
-fill(osLevelLine, minLevelLine, color=C_OVERSOLD_AREA)
-
-//------------------------------------------------------------------------------
-// Plots
-//------------------------------------------------------------------------------
-// -- Plot Histogram, SMI and Signal
-plot(showHistogram ? histogram : na, title="Histogram", style=plot.style_columns, color=histColor)
 smiPlot = plot(smi, title="SMI", color=smiColor)
 signalPlot = plot(signal, title="Signal", color=signalColor)
 
-//-- Apply filling background between SMI and Signal line's
-fillColor = applyFilling ? color.new(trendColor, 70) : C_TRANSPARENT
+transparent = color.new(color.white, 100)
+
+maxLevelPlot = hline(maxLevel, title="Max Level", linestyle=hline.style_dashed, color=transparent)
+obLevelPlot = hline(obLevel, title="Overbought Level", linestyle=hline.style_dashed, color=transparent)
+fill(maxLevelPlot, obLevelPlot, color=color.new(color.green, 85))
+
+hline(0, title="Zero Level", linestyle=hline.style_dotted, color=color.new(color.gray, 50))
+
+osLevelLine = hline(osLevel, title="Oversold Level", linestyle=hline.style_dashed, color=transparent)
+osLevelPlot = plot(osLevel, title="Oversold Level", style=plot.style_line, color=transparent)
+minLevelLine = hline(minLevel, title="Min Level", linestyle=hline.style_dashed, color=transparent)
+minLevelPlot = plot(minLevel, title="Min Level", style=plot.style_line, color=transparent)
+fill(osLevelPlot, minLevelPlot, color=transparent)
+fill(osLevelLine, minLevelLine, color=color.new(color.purple, 85))
+
+fillColor = applyFilling ? color.new(trendColor, 70) : transparent
 fill(smiPlot, signalPlot, color=fillColor)
 
-// -- Crossover
 plotshape(highlightCrossovers and crossover(smi, signal) ? smi : na, title="Crossover", location=location.absolute, style=shape.circle, size=size.tiny, color=color.new(color.green, 0))
 plotshape(highlightCrossovers and crossunder(smi, signal) ? smi : na, title="Crossunder", location=location.absolute, style=shape.circle, size=size.tiny, color=color.new(color.purple, 0))
 
-// -- Highlight Oversold signal region
-fill(signalPlot, obLevelPlot, color=(signal > obLevel ? C_OVERBOUGHT_SIGNAL : na) )
-fill(signalPlot, osLevelPlot, color=(signal < osLevel ? C_OVERSOLD_SIGNAL : na) )
+fill(smiPlot, osLevelPlot, color=(smi < osLevel ? C_OVERSOLD_AREA : na) )
