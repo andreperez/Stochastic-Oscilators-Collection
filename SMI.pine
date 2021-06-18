@@ -51,7 +51,7 @@ longlen = input(20, minval=1, title="Long Length")
 shortlen = input(5, minval=1, title="Short Length")
 siglen = input(5, minval=1, title="Signal Line Length")
 
-otherTimeFrame = input(title="Highter time frame", type=input.resolution, defval="D")
+otherTimeFrame = input(title="Highter time frame", type=input.resolution, defval="S")
 
 TopBand = input(0.5, step=0.1)
 LowBand = input(-0.5, step=0.1)
