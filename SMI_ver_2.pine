@@ -47,6 +47,20 @@ color C_TREND_BEAR = color.new(color.purple, 30)
 color C_SMI = color.new(#ff3e7d, 0)
 color C_SIGNAL = color.new(#3c78d8, 0)
 
+//-----------------------------------------------------------
+// Type of Moving Averages
+//-----------------------------------------------------------
+
+var string SMA  = "Simple"
+var string EMA  = "Exponential"
+var string DEMA = "Double Exponential"
+var string TEMA = "Triple Exponential"
+var string WMA  = "Weighted"
+var string SMMA = "Smoothed"
+var string LSMA = "Least Squares"
+var string HMA  = "Hull"
+var string ALMA = "Arnaud Legoux"
+
 //------------------------------------------------------------------------------
 // Functions
 //------------------------------------------------------------------------------
@@ -98,6 +112,59 @@ f_color_histogram(value) =>
         else
             _color := C_LEVEL_WEAK_1
 
+f_sma(_src, _len) =>
+    out = sma(_src, _len)
+
+f_ema(_src, _len) =>
+    out = ema(_src, _len)
+
+f_dema(_src, _len) =>
+    e1 = ema(_src, _len)
+    e2 = ema(e1, _len)
+    out = 2 * e1 - e2
+
+f_tema(_src, _len) =>
+    ema1 = ema(_src, _len)
+    ema2 = ema(ema1, _len)
+    ema3 = ema(ema2, _len)
+    out = 3 * (ema1 - ema2) + ema3
+
+f_wma(_src, _len) =>
+    out = wma(_src, _len)
+
+f_smma(_src, _len) =>
+    smma = 0.0
+    smma := na(smma[1]) ? sma(_src, _len) : (smma[1] * (_len - 1) + _src) / _len
+
+f_lsma(_src, _len) =>
+    out = linreg(_src, _len, 0)
+
+f_hullma(_src, _len) =>
+    out = wma(2*wma(_src, _len/2)-wma(_src, _len), floor(sqrt(_len)))
+
+f_alma(_src, _len, _alma_offset, _alma_sigma) =>
+    out = alma(_src, _len, _alma_offset, _alma_sigma)    
+
+f_average(_type_ma, _src, _len, _alma_offset, _alma_sigma) =>
+    if _type_ma == SMA
+        f_sma(_src, _len)
+    else if _type_ma == EMA
+        f_ema(_src, _len)
+    else if _type_ma == DEMA
+        f_dema(_src, _len)
+    else if _type_ma == TEMA
+        f_tema(_src, _len)
+    else if _type_ma == WMA
+        f_wma(_src, _len)
+    else if _type_ma == SMMA
+        f_smma(_src, _len)      
+    else if _type_ma == LSMA
+        f_lsma(_src, _len)
+    else if _type_ma == HMA
+        f_hullma(_src, _len)
+    else if _type_ma == ALMA
+        f_alma(_src, _len, _alma_offset, _alma_sigma)    
+        
 //------------------------------------------------------------------------------
 // Inputs
 //------------------------------------------------------------------------------
@@ -105,6 +172,8 @@ length = input(title="Stochastic Lookback", type=input.integer, defval=20, minva
 smoth_len_1 = input(title="1st Smoothing Length", type=input.integer, defval=5, minval=1)
 smoth_len_2 = input(title="2nd Smoothing Length", type=input.integer, defval=5, minval=1)
 signal_Length = input(title="Signal Length", type=input.integer, defval=5, minval=1)
+
+i_type_ma = input(SMA, "Type", options=[SMA, EMA, DEMA, TEMA, WMA, SMMA, LSMA, HMA, ALMA] )
 
 obLevel = input(title="Overbought Level", type=input.integer, defval=40)
 osLevel = input(title="Oversold Level", type=input.integer, defval=-40)
@@ -116,14 +185,24 @@ showHistogram = input(title="Show Histogram ?", type=input.bool, defval=true)
 highlightCrossovers = input(title="Highlight SMI/Signal Crossovers ?", type=input.bool, defval=false)
 applyFilling = input(title="Apply Ribbon Filling ?", type=input.bool, defval=true)
 
+//-----------------------------------------------------------
+// Params for Arnaud Legoux Moving Average (ALMA)
+//-----------------------------------------------------------
+var string GROUP_ALMA = "Exclusive for Arnaud Legoux Moving Average (ALMA)"
+alma_offset = input(title="Offset", type=input.float, defval=0.85, group=GROUP_ALMA, inline="04", tooltip="This offset is considered in the formula, not in the graphic! Offset is the Gaussian applied to the combo line and it is 0.85 by default. Setting offset at 1 makes it fully aligned to the current price just like the exponential moving average. While setting it to zero makes it just like a simple moving average. Traders may try offset combinations according to their own needs and preferences.")
+alma_sigma = input(title="Sigma", type=input.float, defval=6, group=GROUP_ALMA, inline="04", tooltip="The standard deviation applied to the combo line. It makes the combo line sharper.")
+
 //------------------------------------------------------------------------------
 // Calcs
 //------------------------------------------------------------------------------
 _highest = highest(length)
 _lowest = lowest(length)
 
-numerator = ema(ema(src - 0.5 * (_highest + _lowest), smoth_len_1), smoth_len_2)
-denominator = 0.5 * ema(ema(_highest - _lowest, smoth_len_1), smoth_len_2)
+x = src - 0.5 * (_highest + _lowest)
+y = _highest - _lowest
+
+numerator = f_average( i_type_ma, f_average(i_type_ma, x, smoth_len_1, alma_offset, alma_sigma), smoth_len_2, alma_offset, alma_sigma )
+denominator = 0.5 * f_average( i_type_ma, f_average(i_type_ma, y, smoth_len_1, alma_offset, alma_sigma), smoth_len_2, alma_offset, alma_sigma )
 
 smi = 100 * numerator / denominator
 signal = ema(smi, signal_Length)
