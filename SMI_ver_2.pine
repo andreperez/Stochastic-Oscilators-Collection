@@ -171,9 +171,10 @@ f_average(_type_ma, _src, _len, _alma_offset, _alma_sigma) =>
 length = input(title="Stochastic Lookback", type=input.integer, defval=20, minval=1)
 smoth_len_1 = input(title="1st Smoothing Length", type=input.integer, defval=5, minval=1)
 smoth_len_2 = input(title="2nd Smoothing Length", type=input.integer, defval=5, minval=1)
-signal_Length = input(title="Signal Length", type=input.integer, defval=5, minval=1)
+signal_Length = input(title="Signal Smoothing Length", type=input.integer, defval=5, minval=1)
 
-i_type_ma = input(SMA, "Type", options=[SMA, EMA, DEMA, TEMA, WMA, SMMA, LSMA, HMA, ALMA] )
+i_type_ma_smi = input(EMA, "Moving Average Type for SMI", options=[SMA, EMA, DEMA, TEMA, WMA, SMMA, LSMA, HMA, ALMA])
+i_type_ma_signal = input(EMA, "Moving Average Type for Signal", options=[SMA, EMA, DEMA, TEMA, WMA, SMMA, LSMA, HMA, ALMA])
 
 obLevel = input(title="Overbought Level", type=input.integer, defval=40)
 osLevel = input(title="Oversold Level", type=input.integer, defval=-40)
@@ -201,11 +202,11 @@ _lowest = lowest(length)
 x = src - 0.5 * (_highest + _lowest)
 y = _highest - _lowest
 
-numerator = f_average( i_type_ma, f_average(i_type_ma, x, smoth_len_1, alma_offset, alma_sigma), smoth_len_2, alma_offset, alma_sigma )
-denominator = 0.5 * f_average( i_type_ma, f_average(i_type_ma, y, smoth_len_1, alma_offset, alma_sigma), smoth_len_2, alma_offset, alma_sigma )
+numerator = f_average( i_type_ma_smi, f_average(i_type_ma_smi, x, smoth_len_1, alma_offset, alma_sigma), smoth_len_2, alma_offset, alma_sigma )
+denominator = 0.5 * f_average( i_type_ma_smi, f_average(i_type_ma_smi, y, smoth_len_1, alma_offset, alma_sigma), smoth_len_2, alma_offset, alma_sigma )
 
 smi = 100 * numerator / denominator
-signal = ema(smi, signal_Length)
+signal = f_average(i_type_ma_signal, smi, signal_Length, alma_offset, alma_sigma)
 histogram = smi - signal
 
 //------------------------------------------------------------------------------
