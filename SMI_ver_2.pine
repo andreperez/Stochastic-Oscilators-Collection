@@ -41,8 +41,11 @@ color C_OVERBOUGHT_AREA = color.new(#A020F0, 70)
 color C_OVERSOLD_SIGNAL = color.new(color.lime, 70)
 color C_OVERBOUGHT_SIGNAL = color.new(color.fuchsia, 70)
 
-color C_TREND_BULL = color.green
-color C_TREND_BEAR = color.purple
+color C_TREND_BULL = color.new(color.green, 30)
+color C_TREND_BEAR = color.new(color.purple, 30)
+
+color C_SMI = color.new(#ff3e7d, 0)
+color C_SIGNAL = color.new(#3c78d8, 0)
 
 //------------------------------------------------------------------------------
 // Functions
@@ -131,8 +134,8 @@ histogram = smi - signal
 //------------------------------------------------------------------------------
 histColor = f_color_histogram(histogram)
 trendColor = smi > signal ? C_TREND_BULL : C_TREND_BEAR
-smiColor = applyFilling ? trendColor : #ff3e7d
-signalColor = applyFilling ? trendColor : #3c78d8
+smiColor = applyFilling ? trendColor : C_SMI
+signalColor = applyFilling ? trendColor : C_SIGNAL
 
 //------------------------------------------------------------------------------
 // Levels
@@ -166,7 +169,7 @@ smiPlot = plot(smi, title="SMI", color=smiColor)
 signalPlot = plot(signal, title="Signal", color=signalColor)
 
 //-- Apply filling background between SMI and Signal line's
-fillColor = applyFilling ? color.new(trendColor, 70) : C_TRANSPARENT
+fillColor = applyFilling ? trendColor : C_TRANSPARENT
 fill(smiPlot, signalPlot, color=fillColor)
 
 // -- Crossover
