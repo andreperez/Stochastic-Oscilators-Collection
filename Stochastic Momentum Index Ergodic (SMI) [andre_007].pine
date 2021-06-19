@@ -220,7 +220,7 @@ f_average(_type_ma, _src, _len, _alma_offset, _alma_sigma) =>
 //------------------------------------------------------------------------------
 src = input(title="Source", type=input.source, defval=close)
 
-string G_GROUP_SMI = "Stochastic Momentum Index Ergodic (SMI) (TSI)"
+string G_GROUP_SMI = "Calculation parameters"
 length = input(title="Stochastic Lookback", type=input.integer, defval=13, minval=1, group=G_GROUP_SMI)
 smoth_len_1 = input(title="1st Smoothing Length", type=input.integer, defval=25, minval=1, group=G_GROUP_SMI)
 smoth_len_2 = input(title="2nd Smoothing Length", type=input.integer, defval=2, minval=1, group=G_GROUP_SMI)
