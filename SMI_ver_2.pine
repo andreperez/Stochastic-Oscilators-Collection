@@ -79,6 +79,9 @@ string LSMA = "Least Squares"
 string HMA  = "Hull"
 string ALMA = "Arnaud Legoux"
 
+string THEME_DEEP_PURPLE = "Deep Purple"
+string THEME_BLUE_RED = "Blue and Red"
+
 //------------------------------------------------------------------------------
 // Functions
 //------------------------------------------------------------------------------
@@ -192,7 +195,7 @@ string G_GROUP_SMI = "Stochastic Momentum Index Ergodic (SMI) (TSI)"
 length = input(title="Stochastic Lookback", type=input.integer, defval=13, minval=1, group=G_GROUP_SMI)
 smoth_len_1 = input(title="1st Smoothing Length", type=input.integer, defval=25, minval=1, group=G_GROUP_SMI)
 smoth_len_2 = input(title="2nd Smoothing Length", type=input.integer, defval=2, minval=1, group=G_GROUP_SMI)
-signal_Length = input(title="Signal Smoothing Length", type=input.integer, defval=5, minval=1, group=G_GROUP_SMI)
+signal_Length = input(title="Signal Smoothing Length", type=input.integer, defval=13, minval=1, group=G_GROUP_SMI)
 
 string G_GROUP_MA = "Moving Averages"
 type_ma_smi = input(EMA, "Moving Average Type for SMI", options=[SMA, EMA, DEMA, TEMA, WMA, SMMA, LSMA, HMA, ALMA], group=G_GROUP_MA)
@@ -212,6 +215,7 @@ string G_EXTRAS = "Extras"
 showHistogram = input(title="Show Histogram ?", type=input.bool, defval=true, group=G_EXTRAS)
 highlightCrossovers = input(title="Highlight Indicator/Signal Crossovers ?", type=input.bool, defval=true, group=G_EXTRAS)
 applyFilling = input(title="Apply Ribbon Filling ?", type=input.bool, defval=true, group=G_EXTRAS)
+theme = input(THEME_DEEP_PURPLE, "Theme", options=[THEME_DEEP_PURPLE, THEME_BLUE_RED], group=G_EXTRAS)
 
 //------------------------------------------------------------------------------
 // Calcs
@@ -232,6 +236,27 @@ histogram = smi - signal
 //------------------------------------------------------------------------------
 // Dynamic Colors
 //------------------------------------------------------------------------------
+// -- Color's theme
+C_LEVEL_STRONG_5    := (theme == THEME_BLUE_RED ? #0064bb : C_LEVEL_STRONG_5)
+C_LEVEL_STRONG_4    := (theme == THEME_BLUE_RED ? #007ce9 : C_LEVEL_STRONG_4)
+C_LEVEL_STRONG_3    := (theme == THEME_BLUE_RED ? #1893ff : C_LEVEL_STRONG_3)
+C_LEVEL_STRONG_2    := (theme == THEME_BLUE_RED ? #46a9ff : C_LEVEL_STRONG_2)
+C_LEVEL_STRONG_1    := (theme == THEME_BLUE_RED ? #75beff : C_LEVEL_STRONG_1)
+C_LEVEL_WEAK_5      := (theme == THEME_BLUE_RED ? #8e1031 : C_LEVEL_WEAK_5)
+C_LEVEL_WEAK_4      := (theme == THEME_BLUE_RED ? #be1642 : C_LEVEL_WEAK_4)
+C_LEVEL_WEAK_3      := (theme == THEME_BLUE_RED ? #e62356 : C_LEVEL_WEAK_3)
+C_LEVEL_WEAK_2      := (theme == THEME_BLUE_RED ? #eb527a : C_LEVEL_WEAK_2)
+C_LEVEL_WEAK_1      := (theme == THEME_BLUE_RED ? #f1829f : C_LEVEL_WEAK_1)
+C_OVERSOLD_AREA     := (theme == THEME_BLUE_RED ? color.new(color.red, 70) : C_OVERSOLD_AREA)
+C_OVERBOUGHT_AREA   := (theme == THEME_BLUE_RED ? color.new(color.blue, 70) : C_OVERBOUGHT_AREA)
+C_OVERSOLD_SIGNAL   := (theme == THEME_BLUE_RED ? color.new(color.red, 70) : C_OVERSOLD_SIGNAL) 
+C_OVERBOUGHT_SIGNAL := (theme == THEME_BLUE_RED ? color.new(color.blue, 70) : C_OVERBOUGHT_SIGNAL)
+C_TREND_BEAR        := (theme == THEME_BLUE_RED ? color.new(color.red, 30) : C_TREND_BEAR)
+C_TREND_BULL        := (theme == THEME_BLUE_RED ? color.new(color.blue, 30) : C_TREND_BULL) 
+C_CROSSOVER         := (theme == THEME_BLUE_RED ? color.blue : C_CROSSOVER)
+C_CROSSUNDER        := (theme == THEME_BLUE_RED ? color.red : C_CROSSUNDER)
+
+// -- Indicator and oscilator
 histColor = f_color_histogram(histogram)
 trendColor = smi > signal ? C_TREND_BULL : C_TREND_BEAR
 smiColor = applyFilling ? trendColor : C_SMI
