@@ -1,0 +1,25 @@
+// Copyright (c) 2021 André Eduardo Pérez Álvarez
+// 
+// This software is released under the MIT License.
+// https://opensource.org/licenses/MIT
+// @version=4
+
+study(title="Stochastic RSI", shorttitle="Stoch RSI", format=format.price, precision=2, resolution="")
+
+lengthStoch = input(14, "Stochastic Length", minval=1)
+lengthRSI = input(14, "RSI Length", minval=1)
+smoothK = input(3, "K", minval=1)
+smoothD = input(3, "D", minval=1)
+src = input(close, title="RSI Source")
+
+rsi1 = rsi(src, lengthRSI)
+k = sma(stoch(rsi1, rsi1, rsi1, lengthStoch), smoothK)
+d = sma(k, smoothD)
+
+plot(k, "K", color=#0094FF)
+plot(d, "D", color=#FF6A00)
+
+h0 = hline(80, "Upper Band", color=#606060)
+h1 = hline(20, "Lower Band", color=#606060)
+
+fill(h0, h1, color=#9915FF, transp=80, title="Background")
