@@ -1,0 +1,19 @@
+//@version=4
+//@author=TradingView
+
+study(title="Stochastic", shorttitle="Stoch", format=format.price, precision=2, resolution="")
+
+periodK = input(14, title="%K Length", minval=1)
+smoothK = input(1, title="%K Smoothing", minval=1)
+periodD = input(3, title="%D Smoothing", minval=1)
+
+k = sma(stoch(close, high, low, periodK), smoothK)
+d = sma(k, periodD)
+
+plot(k, title="%K", color=#0094FF)
+plot(d, title="%D", color=#FF6A00)
+
+h0 = hline(80, "Upper Band", color=#606060)
+h1 = hline(20, "Lower Band", color=#606060)
+
+fill(h0, h1, color=#9915FF, transp=80, title="Background")
