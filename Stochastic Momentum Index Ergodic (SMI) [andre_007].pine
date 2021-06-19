@@ -243,6 +243,7 @@ minLevel = input(title="Min Level", type=input.integer, defval=-100, group=G_GRO
 string G_EXTRAS = "Extras"
 showHistogram = input(title="Show Histogram ?", type=input.bool, defval=true, group=G_EXTRAS)
 highlightCrossovers = input(title="Highlight Indicator/Signal Crossovers ?", type=input.bool, defval=true, group=G_EXTRAS)
+highlighBackground = input(title="Highlight background on Overbought/Oversold Signal ?", type=input.bool, defval=true, group=G_EXTRAS)
 applyFilling = input(title="Apply Ribbon Filling ?", type=input.bool, defval=true, group=G_EXTRAS)
 applyBarColors = input(title="Apply Bar Colors ?", type=input.bool, defval=false, group=G_EXTRAS)
 theme = input(THEME_DEEP_PURPLE, "Theme", options=[THEME_DEEP_PURPLE, THEME_BLUE_RED], group=G_EXTRAS)
@@ -329,8 +330,8 @@ plotshape(highlightCrossovers and crossover(smi, signal) ? signal : na, title="C
 plotshape(highlightCrossovers and crossunder(smi, signal) ? signal : na, title="Crossunder", location=location.absolute, style=shape.circle, size=size.tiny, color=C_CROSSUNDER)
 
 // -- Highlight Oversold signal region
-fill(signalPlot, obLevelPlot, color=(signal > obLevel ? C_OVERBOUGHT_SIGNAL : na) )
-fill(signalPlot, osLevelPlot, color=(signal < osLevel ? C_OVERSOLD_SIGNAL : na) )
+fill(signalPlot, obLevelPlot, color=(highlighBackground and signal > obLevel ? C_OVERBOUGHT_SIGNAL : na) )
+fill(signalPlot, osLevelPlot, color=(highlighBackground and signal < osLevel ? C_OVERSOLD_SIGNAL : na) )
 
 //------------------------------------------------------------------------------
 // Bar colors
