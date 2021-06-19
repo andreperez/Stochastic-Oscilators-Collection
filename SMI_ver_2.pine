@@ -65,8 +65,8 @@ color C_TREND_BEAR = color.new(color.purple, 30)
 color C_SMI = color.new(#ff3e7d, 0)
 color C_SIGNAL = color.new(#3c78d8, 0)
 
-color C_CROSSOVER = color.new(#84E184, 0)
-color C_CROSSUNDER = color.new(#C576F6, 0)
+color C_CROSSOVER = color.new(color.blue, 0)
+color C_CROSSUNDER = color.new(color.red, 0)
 
 // -- Type of Moving Averages
 string SMA  = "Simple"
@@ -253,8 +253,6 @@ C_OVERSOLD_SIGNAL   := (theme == THEME_BLUE_RED ? color.new(color.red, 70) : C_O
 C_OVERBOUGHT_SIGNAL := (theme == THEME_BLUE_RED ? color.new(color.blue, 70) : C_OVERBOUGHT_SIGNAL)
 C_TREND_BEAR        := (theme == THEME_BLUE_RED ? color.new(color.red, 30) : C_TREND_BEAR)
 C_TREND_BULL        := (theme == THEME_BLUE_RED ? color.new(color.blue, 30) : C_TREND_BULL) 
-C_CROSSOVER         := (theme == THEME_BLUE_RED ? color.blue : C_CROSSOVER)
-C_CROSSUNDER        := (theme == THEME_BLUE_RED ? color.red : C_CROSSUNDER)
 
 // -- Indicator and oscilator
 histColor = f_color_histogram(histogram)
@@ -297,8 +295,8 @@ fillColor = applyFilling ? trendColor : C_TRANSPARENT
 fill(smiPlot, signalPlot, color=fillColor)
 
 // -- Crossover
-plotshape(highlightCrossovers and crossover(smi, signal) ? signal : na, title="Crossover", location=location.absolute, style=shape.triangleup, size=size.tiny, color=C_CROSSOVER)
-plotshape(highlightCrossovers and crossunder(smi, signal) ? signal : na, title="Crossunder", location=location.absolute, style=shape.triangledown, size=size.tiny, color=C_CROSSUNDER)
+plotshape(highlightCrossovers and crossover(smi, signal) ? signal : na, title="Crossover", location=location.absolute, style=shape.circle, size=size.tiny, color=C_CROSSOVER)
+plotshape(highlightCrossovers and crossunder(smi, signal) ? signal : na, title="Crossunder", location=location.absolute, style=shape.circle, size=size.tiny, color=C_CROSSUNDER)
 
 // -- Highlight Oversold signal region
 fill(signalPlot, obLevelPlot, color=(signal > obLevel ? C_OVERBOUGHT_SIGNAL : na) )
