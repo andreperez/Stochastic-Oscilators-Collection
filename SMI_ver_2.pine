@@ -8,19 +8,48 @@
 // Many thanks to: 
 //      Alex Orekhov (everget)
 //      JacobAmos
+//      lonestar108
+//      HPotter
+//      surjithctly
 //      TradingView
 //
 // Links:
 //      https://br.tradingview.com/script/eubdyhzk-Stochastic-Momentum-Index/
 //      https://br.tradingview.com/script/NULg8CIG-Stochastic-Momentum-Index/
+//      https://br.tradingview.com/script/HLbqdCku-Stochastic-Momentum-Index-SMI/
+//      https://br.tradingview.com/script/KvJKGi0C-SMI-Ergodic-Oscillator-Strategy-ver-2/
+//      https://br.tradingview.com/script/TYB9LoiW-SMI-Bars/
 //      
 //  
-//      TODO: definir "estocástico"
-//      TODO: colocar outros autores e fontes
-//      TODO: colocar explicação
-// Stochastic Momentum Index script may be freely distributed under the MIT license.
+//  Description
+//      This is as customized version of "Stochastic Momentum Index" (SMI) "Ergodic".
+//
+//      Basically, I took a lot of interesting ideas from the authors mentioned above, and put them all together.
+//      Implementations:
+//        
+//      1. Script developed in PineScript 4
+//      2. Possibility to choose two themes
+//      3. Possibility to choose the type of moving average applied to both the SMI indicator and the signal
+//      4. Histogram with gradient colors, emphasizing the strength of momentum
+//      5. Crossover and crossunder signs
+//      6. Coloring of the bars like the histogram
+//      7. Background fill between indicator and signal lines
+//
+//      By default, the SMI and Signal lines uses the Exponential Moving Average (EMA).
+//
+//      In this script, the following moving averages can also be used:
+//      - Simple (SMA)
+//      - Double Exponential (DEMA)
+//      - Triple Exponential (THEME)
+//      - Weighted (WMA)
+//      - Smoothed (SSMA)
+//      - Least Squares (LSMA)
+//      - Hull
+//      - Arnaud Legoux
+//
+//      There are 256 possibilities...
 
-study("Stochastic Muti-Pack [andre_007]", shorttitle="SMP", resolution="")
+study("Stochastic Momentum Index (SMI) Ergodic [andre_007]", shorttitle="SMI", resolution="")
 
 //------------------------------------------------------------------------------
 // Constants
