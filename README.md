@@ -36,6 +36,10 @@ In this script, the following moving averages can also be used:
 
 There are 256 possibilities...
 
+Example:
+
+![alt](image/../images/New%20SMI.png)
+
 ## Caution 💊
 
 No technical indicators are 100% accurate as they can sometimes generate false signals.
@@ -54,14 +58,14 @@ Place the indicator in TradingView. Than simply choose the parameters.
 
 ### 1. What is "Stochastic"?
 
-Genericamente falando, um processo pode ser definido como *estocástico* quando um conjunto de variáveis aleatórias *X* produzem um conjunto de resultados aleatórios *Y*, e os resultados de *Y*, embora aleatórios, podem ser ordenados de forma sequencial ao longo do tempo.
+Generally speaking, a process can be defined as *stochastic* when a set of random variables *x* produce a set of random results *y*, and the results of *y*, although random, can be segable sequentially of time.
 
-Exemplos de processos estocásticos:
+Examples of stochastic processes:
 
-- flutuações nos mercados de ações e nas taxas de câmbio;
-- dados médicos como temperatura, pressão sanguínea, dados de um eletroencefalograma;
-- fluxo turbulento de um líquido ou gás;
-- variações no campo magnético da Terra.
+- fluctuations in stock markets and exchange rates;
+- medical data such as temperature, blood pressure, data from an electroencephalogram;
+- turbulent flow of a liquid or gas;
+- variations in the Earth's magnetic field.
 
 ### 2. What is the "Stochastic Oscilator"?
 
@@ -104,5 +108,7 @@ The SMI has a normal range of values between +100 and -100.
 
 ### References 💊
 
-- TradingView
+- Stocks & Commodities V. 15:12 (561-564): The Stochastic Oscillator by Joe Luisi
 - Stocks & Commodities V. 11:1 (11-18): Stochastic Momentum by William Blau
+- [TradingView](https://br.tradingview.com)
+- [Investopedia](https://www.investopedia.com/)
