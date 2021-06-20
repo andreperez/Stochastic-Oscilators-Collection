@@ -9,7 +9,7 @@ It's developed in PineScript for the technical analysis platform of **TradingVie
 
 ## Motivation 💊
 
-This is as customized version of *Stochastic Momentum Index (SMI) Ergodic*.
+Here I developed a customized version of *Stochastic Momentum Index (SMI) Ergodic*.
 Basically, I took a lot of interesting ideas from the authors mentioned above, and put them all together.
 Implementations:
   
