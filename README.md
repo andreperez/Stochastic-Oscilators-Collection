@@ -119,3 +119,9 @@ William Blau developed the SMI, which attempt to provide a more reliable indicat
 - Stocks & Commodities V. 11:1 (11-18): Stochastic Momentum by William Blau
 - [TradingView](https://br.tradingview.com)
 - [Investopedia](https://www.investopedia.com/)
+
+#### Donations
+
+- ADA: addr1q88aepqmd0wcgpgl5zst74z6nfgd7vrct607l7aj96ml80vdejles9j9cd5gl0vthm5dpwcfq5ky0n3ud9yw4q3v96sqpz6a43
+- BTC: 1PnerhP2C5xeGXxAkhxQX4rYrBUguGe1yh
+- XLM: GCPONJ5OX7KSEHBNPB2SKJZJGYSXTRN7ORYQXW443BLEFLS72ZVYISG2
