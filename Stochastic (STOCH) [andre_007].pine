@@ -1,0 +1,288 @@
+// @version=4
+// @author=andre_007
+// Copyright (c) 2021 André Eduardo Pérez Álvarez
+// 
+// This sourcecode is released under the MIT License.
+// https://opensource.org/licenses/MIT
+//
+
+study("Stochastic Oscillator (STOCH) [andre_007]", shorttitle="STOCH", resolution="")
+
+//------------------------------------------------------------------------------
+// Constants
+//------------------------------------------------------------------------------
+// -- Levels
+float LEVEL_STRONG_1 = 5
+float LEVEL_STRONG_2 = 10
+float LEVEL_STRONG_3 = 15
+float LEVEL_STRONG_4 = 20
+float LEVEL_STRONG_5 = 25
+
+float LEVEL_WEAK_1 = -5
+float LEVEL_WEAK_2 = -10
+float LEVEL_WEAK_3 = -15
+float LEVEL_WEAK_4 = -20
+float LEVEL_WEAK_5 = -25
+
+// -- Colors
+color C_LEVEL_STRONG_5 = #228B22
+color C_LEVEL_STRONG_4 = #2BB02B
+color C_LEVEL_STRONG_3 = #3ACF3A
+color C_LEVEL_STRONG_2 = #5FD85F
+color C_LEVEL_STRONG_1 = #84E184
+
+color C_LEVEL_WEAK_5 = #6C0BA9
+color C_LEVEL_WEAK_4 = #880ED4
+color C_LEVEL_WEAK_3 = #A020F0
+color C_LEVEL_WEAK_2 = #B24BF3
+color C_LEVEL_WEAK_1 = #C576F6
+
+color C_TRANSPARENT = color.new(color.white, 100)
+
+color C_OVERSOLD_AREA = color.new(#228B22, 70)
+color C_OVERBOUGHT_AREA = color.new(#A020F0, 70)
+
+color C_OVERSOLD_SIGNAL = color.new(color.lime, 70)
+color C_OVERBOUGHT_SIGNAL = color.new(color.fuchsia, 70)
+
+color C_TREND_BULL = color.new(color.green, 30)
+color C_TREND_BEAR = color.new(color.purple, 30)
+
+color C_K_OSC = color.new(#ff3e7d, 0)
+color C_D_OSC = color.new(#3c78d8, 0)
+
+color C_CROSSOVER = color.new(color.blue, 0)
+color C_CROSSUNDER = color.new(color.red, 0)
+
+// -- Type of Moving Averages
+string SMA  = "Simple"
+string EMA  = "Exponential"
+string DEMA = "Double Exponential"
+string TEMA = "Triple Exponential"
+string WMA  = "Weighted"
+string SMMA = "Smoothed"
+string LSMA = "Least Squares"
+string HMA  = "Hull"
+string ALMA = "Arnaud Legoux"
+
+string THEME_DEEP_PURPLE = "Deep Purple"
+string THEME_BLUE_RED = "Blue and Red"
+
+//------------------------------------------------------------------------------
+// Functions
+//------------------------------------------------------------------------------
+f_color_histogram(value) =>
+    color _color = na    
+
+    if value >= LEVEL_STRONG_5
+        _color := C_LEVEL_STRONG_5
+    else if value >= LEVEL_STRONG_4
+        if value > value[1]
+            _color := C_LEVEL_STRONG_5
+        else
+            _color := C_LEVEL_STRONG_4
+    else if value >= LEVEL_STRONG_3
+        if value > value[1]
+            _color := C_LEVEL_STRONG_4
+        else
+            _color := C_LEVEL_STRONG_3    
+    else if value >= LEVEL_STRONG_2
+        if value > value[1]
+            _color := C_LEVEL_STRONG_3
+        else
+            _color := C_LEVEL_STRONG_2
+    else if value > 0        
+        if value > value[1]
+            _color := C_LEVEL_STRONG_2
+        else
+            _color := C_LEVEL_STRONG_1
+    else if value <= LEVEL_WEAK_5
+        _color := C_LEVEL_WEAK_5
+    else if value <= LEVEL_WEAK_4
+        if value < value[1]
+            _color := C_LEVEL_WEAK_5
+        else
+            _color := C_LEVEL_WEAK_4
+    else if value <= LEVEL_WEAK_3
+        if value < value[1]
+            _color := C_LEVEL_WEAK_4
+        else
+            _color := C_LEVEL_WEAK_3
+    else if value <= LEVEL_WEAK_2
+        if value < value[1]
+            _color := C_LEVEL_WEAK_3
+        else
+            _color := C_LEVEL_WEAK_2
+    else
+        if value < value[1]
+            _color := C_LEVEL_WEAK_2
+        else
+            _color := C_LEVEL_WEAK_1
+
+f_sma(_src, _len) =>
+    out = sma(_src, _len)
+
+f_ema(_src, _len) =>
+    out = ema(_src, _len)
+
+f_dema(_src, _len) =>
+    e1 = ema(_src, _len)
+    e2 = ema(e1, _len)
+    out = 2 * e1 - e2
+
+f_tema(_src, _len) =>
+    ema1 = ema(_src, _len)
+    ema2 = ema(ema1, _len)
+    ema3 = ema(ema2, _len)
+    out = 3 * (ema1 - ema2) + ema3
+
+f_wma(_src, _len) =>
+    out = wma(_src, _len)
+
+f_smma(_src, _len) =>
+    smma = 0.0
+    smma := na(smma[1]) ? sma(_src, _len) : (smma[1] * (_len - 1) + _src) / _len
+
+f_lsma(_src, _len) =>
+    out = linreg(_src, _len, 0)
+
+f_hullma(_src, _len) =>
+    out = wma(2*wma(_src, _len/2)-wma(_src, _len), floor(sqrt(_len)))
+
+f_alma(_src, _len, _alma_offset, _alma_sigma) =>
+    out = alma(_src, _len, _alma_offset, _alma_sigma)    
+
+f_average(_type_ma, _src, _len, _alma_offset, _alma_sigma) =>
+    if _type_ma == SMA
+        f_sma(_src, _len)
+    else if _type_ma == EMA
+        f_ema(_src, _len)
+    else if _type_ma == DEMA
+        f_dema(_src, _len)
+    else if _type_ma == TEMA
+        f_tema(_src, _len)
+    else if _type_ma == WMA
+        f_wma(_src, _len)
+    else if _type_ma == SMMA
+        f_smma(_src, _len)      
+    else if _type_ma == LSMA
+        f_lsma(_src, _len)
+    else if _type_ma == HMA
+        f_hullma(_src, _len)
+    else if _type_ma == ALMA
+        f_alma(_src, _len, _alma_offset, _alma_sigma)    
+        
+//------------------------------------------------------------------------------
+// Inputs
+//------------------------------------------------------------------------------
+src = input(title="Source", type=input.source, defval=close)
+
+string G_GROUP_STOCH = "Calculation parameters"
+periodK = input(14, title="%K Length", minval=1, group=G_GROUP_STOCH)
+smoothK = input(1, title="%K Smoothing", minval=1, group=G_GROUP_STOCH)
+smoothD = input(3, title="%D Smoothing", minval=1, group=G_GROUP_STOCH)
+
+string G_GROUP_MA = "Moving Averages"
+type_ma_k = input(SMA, "Moving Average Type for %K", options=[SMA, EMA, DEMA, TEMA, WMA, SMMA, LSMA, HMA, ALMA], group=G_GROUP_MA)
+type_ma_d = input(SMA, "Moving Average Type for %D", options=[SMA, EMA, DEMA, TEMA, WMA, SMMA, LSMA, HMA, ALMA], group=G_GROUP_MA)
+
+var string GROUP_ALMA = "Exclusive for Arnaud Legoux Moving Average (ALMA)"
+alma_offset = input(title="Offset", type=input.float, defval=0.85, group=GROUP_ALMA, inline="04", tooltip="This offset is considered in the formula, not in the graphic! Offset is the Gaussian applied to the combo line and it is 0.85 by default. Setting offset at 1 makes it fully aligned to the current price just like the exponential moving average. While setting it to zero makes it just like a simple moving average. Traders may try offset combinations according to their own needs and preferences.")
+alma_sigma = input(title="Sigma", type=input.float, defval=6, group=GROUP_ALMA, inline="04", tooltip="The standard deviation applied to the combo line. It makes the combo line sharper.")
+
+string G_GROUP_LEVELS = "Levels"
+obLevel = input(title="Overbought Level", type=input.integer, defval=80, group=G_GROUP_LEVELS)
+osLevel = input(title="Oversold Level", type=input.integer, defval=20, group=G_GROUP_LEVELS)
+maxLevel = input(title="Max Level", type=input.integer, defval=100, group=G_GROUP_LEVELS)
+minLevel = input(title="Min Level", type=input.integer, defval=0, group=G_GROUP_LEVELS)
+
+string G_EXTRAS = "Extras"
+showHistogram = input(title="Show Histogram ?", type=input.bool, defval=false, group=G_EXTRAS)
+highlightCrossovers = input(title="Highlight Indicator/Signal Crossovers ?", type=input.bool, defval=false, group=G_EXTRAS)
+highlighBackground = input(title="Highlight background on Overbought/Oversold Signal ?", type=input.bool, defval=true, group=G_EXTRAS)
+applyFilling = input(title="Apply Ribbon Filling ?", type=input.bool, defval=true, group=G_EXTRAS)
+applyBarColors = input(title="Apply Bar Colors ?", type=input.bool, defval=false, group=G_EXTRAS)
+theme = input(THEME_DEEP_PURPLE, "Theme", options=[THEME_DEEP_PURPLE, THEME_BLUE_RED], group=G_EXTRAS)
+
+//------------------------------------------------------------------------------
+// Calcs
+//------------------------------------------------------------------------------
+stoch_calc = stoch(src, high, low, periodK)
+k_osc = f_average(type_ma_k, stoch_calc, smoothK, alma_offset, alma_sigma)
+d_osc = f_average(type_ma_d, k_osc, smoothD, alma_offset, alma_sigma)
+
+histogram = k_osc - d_osc
+
+//------------------------------------------------------------------------------
+// Dynamic Colors
+//------------------------------------------------------------------------------
+// -- Color's theme
+C_LEVEL_STRONG_5    := (theme == THEME_BLUE_RED ? #0064bb : C_LEVEL_STRONG_5)
+C_LEVEL_STRONG_4    := (theme == THEME_BLUE_RED ? #007ce9 : C_LEVEL_STRONG_4)
+C_LEVEL_STRONG_3    := (theme == THEME_BLUE_RED ? #1893ff : C_LEVEL_STRONG_3)
+C_LEVEL_STRONG_2    := (theme == THEME_BLUE_RED ? #46a9ff : C_LEVEL_STRONG_2)
+C_LEVEL_STRONG_1    := (theme == THEME_BLUE_RED ? #75beff : C_LEVEL_STRONG_1)
+C_LEVEL_WEAK_5      := (theme == THEME_BLUE_RED ? #8e1031 : C_LEVEL_WEAK_5)
+C_LEVEL_WEAK_4      := (theme == THEME_BLUE_RED ? #be1642 : C_LEVEL_WEAK_4)
+C_LEVEL_WEAK_3      := (theme == THEME_BLUE_RED ? #e62356 : C_LEVEL_WEAK_3)
+C_LEVEL_WEAK_2      := (theme == THEME_BLUE_RED ? #eb527a : C_LEVEL_WEAK_2)
+C_LEVEL_WEAK_1      := (theme == THEME_BLUE_RED ? #f1829f : C_LEVEL_WEAK_1)
+C_OVERSOLD_AREA     := (theme == THEME_BLUE_RED ? color.new(color.red, 70) : C_OVERSOLD_AREA)
+C_OVERBOUGHT_AREA   := (theme == THEME_BLUE_RED ? color.new(color.blue, 70) : C_OVERBOUGHT_AREA)
+C_OVERSOLD_SIGNAL   := (theme == THEME_BLUE_RED ? color.new(color.red, 70) : C_OVERSOLD_SIGNAL) 
+C_OVERBOUGHT_SIGNAL := (theme == THEME_BLUE_RED ? color.new(color.blue, 70) : C_OVERBOUGHT_SIGNAL)
+C_TREND_BEAR        := (theme == THEME_BLUE_RED ? color.new(color.red, 30) : C_TREND_BEAR)
+C_TREND_BULL        := (theme == THEME_BLUE_RED ? color.new(color.blue, 30) : C_TREND_BULL) 
+
+// -- Indicator and oscilator
+histColor = f_color_histogram(histogram)
+trendColor = k_osc > d_osc ? C_TREND_BULL : C_TREND_BEAR
+kColor = applyFilling ? trendColor : C_K_OSC
+dColor = applyFilling ? trendColor : C_D_OSC
+
+//------------------------------------------------------------------------------
+// Levels
+//------------------------------------------------------------------------------
+// -- Max\Overbought
+obLevelLine = hline(obLevel, title="Overbought Level", linestyle=hline.style_dashed, color=C_TRANSPARENT)
+obLevelPlot = plot(obLevel, title="Overbought Level", style=plot.style_line, color=C_TRANSPARENT)
+maxLevelLine = hline(maxLevel, title="Max Level", linestyle=hline.style_dashed, color=C_TRANSPARENT)
+maxLevelPlot = plot(maxLevel, title="Max Level", style=plot.style_line, color=C_TRANSPARENT)
+
+hline(50, title="Zero Level", linestyle=hline.style_dotted, color=color.new(color.gray, 50))
+
+// -- Min\Oversold
+osLevelLine = hline(osLevel, title="Oversold Level", linestyle=hline.style_dashed, color=C_TRANSPARENT)
+osLevelPlot = plot(osLevel, title="Oversold Level", style=plot.style_line, color=C_TRANSPARENT)
+minLevelLine = hline(minLevel, title="Min Level", linestyle=hline.style_dashed, color=C_TRANSPARENT)
+minLevelPlot = plot(minLevel, title="Min Level", style=plot.style_line, color=C_TRANSPARENT)
+
+// -- Fills
+fill(obLevelPlot, maxLevelPlot, color=C_TRANSPARENT)
+fill(obLevelLine, maxLevelLine, color=C_OVERBOUGHT_AREA)
+fill(osLevelPlot, minLevelPlot, color=C_TRANSPARENT)
+fill(osLevelLine, minLevelLine, color=C_OVERSOLD_AREA)
+
+//------------------------------------------------------------------------------
+// Plots
+//------------------------------------------------------------------------------
+plot(showHistogram ? histogram : na, title="Histogram", style=plot.style_columns, color=histColor)
+kPlot = plot(k_osc, title="STOCH (%K)", color=kColor)
+dPlot = plot(d_osc, title="Signal (%D)", color=dColor)
+
+//-- Apply filling background between SMI and Signal line's
+fillColor = applyFilling ? trendColor : C_TRANSPARENT
+fill(kPlot, dPlot, color=fillColor)
+
+// -- Crossover
+plotshape(highlightCrossovers and crossover(k_osc, d_osc) ? k_osc : na, title="Crossover", location=location.absolute, style=shape.circle, size=size.tiny, color=C_CROSSOVER)
+plotshape(highlightCrossovers and crossunder(k_osc, d_osc) ? d_osc : na, title="Crossunder", location=location.absolute, style=shape.circle, size=size.tiny, color=C_CROSSUNDER)
+
+// -- Highlight Oversold signal region
+fill(dPlot, obLevelPlot, color=(highlighBackground and d_osc > obLevel ? C_OVERBOUGHT_SIGNAL : na) )
+fill(dPlot, osLevelPlot, color=(highlighBackground and d_osc < osLevel ? C_OVERSOLD_SIGNAL : na) )
+
+//------------------------------------------------------------------------------
+// Bar colors
+//------------------------------------------------------------------------------
+barcolor( applyBarColors ? histColor : na )
