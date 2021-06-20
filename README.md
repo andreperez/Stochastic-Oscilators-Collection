@@ -9,23 +9,26 @@ It's developed in PineScript for the technical analysis platform of **TradingVie
 
 ## Motivation 💊
 
-Here I developed a customized version of *Stochastic Momentum Index (SMI) Ergodic*.
-Basically, I took a lot of interesting ideas from the authors mentioned above, and put them all together.
+Here I developed some customized versions of *Stochastic Oscilators*.
+Basically, I took a lot of interesting ideas from various authors, and put them all together.
 Implementations:
   
 1. Script developed in PineScript 4
-2. Possibility to choose two themes
-3. Possibility to choose the type of moving average applied to both the SMI indicator and the signal
+2. Possibility to choose two themes ("Deep Purple" and "Blue and Red")
+3. Possibility to choose the type of moving average applied to both indicator and signal
 4. Histogram with gradient colors, emphasizing the strength of momentum
 5. Crossover and crossunder signs
-6. Coloring of the bars like the histogram
+6. Coloring bars like the histogram
 7. Background fill between indicator and signal lines
 
-By default, the SMI and Signal lines uses the Exponential Moving Average (EMA).
+Each indicator has it's own defaults.
+For example, in SMI (Stochastic Momentum Index) the indicador and signal lines uses the Exponential Moving Average (EMA).
+Here we can choose them.
 
 In this script, the following moving averages can also be used:
 
 - Simple (SMA)
+- Exponential Moving Average (EMA)
 - Double Exponential (DEMA)
 - Triple Exponential (THEME)
 - Weighted (WMA)
@@ -90,21 +93,25 @@ where:
 
 And the second line (known as %D) is a simple moving average of the %K line.
 It's serve to minimize whipsaws while remaining in the larger trend.
+
 %D is calculated as follow:
 
 `%D = SMA(%K, periodD)`
 
-![- %D is a smoothed average of %K,](images/Stochast%20-%20Example.jpg)
+![Example of STOCH Oscilator](images/Stochast%20-%20Example.jpg)
 
 ### 2. What is *Stochastic Momentum Index (SMI) Ergodic* 📈
 
 The Stochastic Momentum Index (SMI) is a more refined version of the stochastic oscillator, employing a wider range of values and having a higher sensitivity to closing prices.
 
-The SMI is considered a refinement of the stochastic oscillator. It calculates the distance of the current closing price as it relates to the median of the high/low range of price. William Blau developed the SMI, which attempt to provide a more reliable indicator, less subject to false swings.
+While the original STOCH from 1950's is limited in range between 0 and 100, in SMI the range is expanded to -100 and 100.
+So it can be negative or positive.
 
-The SMI has a normal range of values between +100 and -100.
+The SMI is considered a refinement of the stochastic oscillator.
+It calculates the distance of the current closing price as it relates to the median of the high/low range of price.
+William Blau developed the SMI, which attempt to provide a more reliable indicator, less subject to false swings.
 
-![- %D is a smoothed average of %K,](images/Stochast%20Momentum%20Index%20-%20Example.jpg)
+![Example of Stochastic Momentum Index (SMI)](images/Stochast%20Momentum%20Index%20-%20Example.jpg)
 
 ### References 💊
 
