@@ -90,7 +90,7 @@ It's serve to minimize whipsaws while remaining in the larger trend.
 
 `%D = SMA(%K, periodD)`
 
-![- %D is a smoothed average of %K,](images\Stochast%20-%20Example.jpg)
+![- %D is a smoothed average of %K,](images/Stochast%20-%20Example.jpg)
 
 ### 2. What is *Stochastic Momentum Index (SMI) Ergodic* 📈
 
@@ -100,7 +100,7 @@ The SMI is considered a refinement of the stochastic oscillator. It calculates t
 
 The SMI has a normal range of values between +100 and -100.
 
-![- %D is a smoothed average of %K,](images\Stochast%20Momentum%20Index%20-%20Example.jpg)
+![- %D is a smoothed average of %K,](images/Stochast%20Momentum%20Index%20-%20Example.jpg)
 
 ### References 💊
 
