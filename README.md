@@ -122,6 +122,8 @@ William Blau developed the SMI, which attempt to provide a more reliable indicat
 
 #### Donations
 
-- ADA: addr1q88aepqmd0wcgpgl5zst74z6nfgd7vrct607l7aj96ml80vdejles9j9cd5gl0vthm5dpwcfq5ky0n3ud9yw4q3v96sqpz6a43
 - BTC: 1PnerhP2C5xeGXxAkhxQX4rYrBUguGe1yh
-- XLM: GCPONJ5OX7KSEHBNPB2SKJZJGYSXTRN7ORYQXW443BLEFLS72ZVYISG2
+- LTC: LMhAfkzJoUHHWfFCcMnnQ4jdV4Vi9WZG3W
+- Stellar: GCPONJ5OX7KSEHBNPB2SKJZJGYSXTRN7ORYQXW443BLEFLS72ZVYISG2
+- Zcash: t1THe8JvsYqt7bmbFWkFpjssJhJLka6VAhk
+- Tron: TSVnEgtoYhRMwiRYfDFC51XfGNSpxse2yz
